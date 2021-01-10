@@ -1,0 +1,32 @@
+version: "3.3"
+services:
+  mongo:
+    image: "mongo"
+    container_name: "mongo"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "strapi"
+      MONGO_INITDB_ROOT_PASSWORD: "strapi"
+    networks:
+      - strapi-app-network
+    restart: unless-stopped
+    volumes:
+      - ./mongo/data:/data/db
+
+  strapi:
+    container_name: strapi
+    build:
+      dockerfile: Dockerfile
+      context: ./src
+    depends_on:
+      - mongo
+    restart: unless-stopped
+    networks:
+      - strapi-app-network
+    ports:
+      - "1337:1337"
+
+networks:
+  strapi-app-network:
+    driver: bridge
